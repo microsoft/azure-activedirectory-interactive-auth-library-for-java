@@ -21,6 +21,7 @@ import com.google.gson.JsonElement;
 import com.microsoftopentechnologies.aad.adal4j.jwt.JWT;
 import com.microsoftopentechnologies.aad.adal4j.jwt.JWTClaimsSet;
 import com.microsoftopentechnologies.aad.adal4j.jwt.JWTParser;
+import com.microsoftopentechnologies.aad.adal4j.utils.JsonUtils;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -63,12 +64,12 @@ public class UserInfo implements Serializable {
         Map<String, JsonElement> customClaims = claims.getCustomClaims();
 
         return new UserInfo(
-                customClaims.get(IdTokenClaim.ObjectId).getAsString(),
-                customClaims.get(IdTokenClaim.GivenName).getAsString(),
-                customClaims.get(IdTokenClaim.FamilyName).getAsString(),
-                customClaims.get(IdTokenClaim.IdentityProvider).getAsString(),
-                customClaims.get(IdTokenClaim.UPN).getAsString(),
-                customClaims.get(IdTokenClaim.UniqueName).getAsString());
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.ObjectId)),
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.GivenName)),
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.FamilyName)),
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.IdentityProvider)),
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.UPN)),
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.UniqueName)));
     }
 
     /**

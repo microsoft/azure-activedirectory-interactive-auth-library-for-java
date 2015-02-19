@@ -16,12 +16,14 @@
 
 package com.microsoftopentechnologies.aad.adal4j.jwt;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.microsoftopentechnologies.aad.adal4j.utils.JsonUtils;
 
+import javax.xml.bind.DatatypeConverter;
 import java.text.ParseException;
 import java.util.List;
 
@@ -50,9 +52,28 @@ public class JWTParser {
 
         // parse JWT header and claims
         JsonParser jsonParser = new JsonParser();
-        JsonObject header = (JsonObject)jsonParser.parse(tokens.get(0));
-        JsonObject claims = (JsonObject)jsonParser.parse(tokens.get(1));
+        JsonObject header = (JsonObject)jsonParser.parse(stringFromBase64(tokens.get(0)));
+        JsonObject claims = (JsonObject)jsonParser.parse(stringFromBase64(tokens.get(1)));
 
         return JWT.parse(header, claims);
+    }
+
+    private static String stringFromBase64(String str) {
+        return new String(
+                DatatypeConverter.parseBase64Binary(
+                        normalizeB64String(str)));
+    }
+
+    /**
+     * DatatypeConverter.parseBase64Binary has problems with base 64 encoded
+     * strings whose length is not a multiple of 4. We fix this up by appending
+     * '=' characters. Solution taken from: http://stackoverflow.com/a/9080594/8080.
+     * @param s Input base 64 string.
+     * @return Normalized so that length is a multiple of 4.
+     */
+    private static String normalizeB64String(String s) {
+        while(s.length() % 4 != 0)
+            s += "=";
+        return s;
     }
 }

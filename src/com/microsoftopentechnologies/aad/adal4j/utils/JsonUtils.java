@@ -37,4 +37,12 @@ public class JsonUtils {
 
         return Long.MIN_VALUE;
     }
+
+    public static String getAsString(JsonElement element) {
+        if(element != null) {
+            return element.getAsString();
+        }
+
+        return "";
+    }
 }

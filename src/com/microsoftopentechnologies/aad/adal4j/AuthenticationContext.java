@@ -168,13 +168,7 @@ public class AuthenticationContext {
                             UserInfo.parse(JsonUtils.getJsonStringProp(root, OAuthReservedClaim.IdToken)));
                     future.set(result);
 
-                } catch (MalformedURLException e) {
-                    future.setException(e);
-                } catch (ProtocolException e) {
-                    future.setException(e);
-                } catch (IOException e) {
-                    future.setException(e);
-                } catch (ParseException e) {
+                } catch (Exception e) {
                     future.setException(e);
                 } finally {
                     try {

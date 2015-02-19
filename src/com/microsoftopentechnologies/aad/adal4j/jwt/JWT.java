@@ -19,17 +19,26 @@ package com.microsoftopentechnologies.aad.adal4j.jwt;
 import com.google.gson.JsonObject;
 import com.microsoftopentechnologies.aad.adal4j.utils.JsonUtils;
 
+import java.text.ParseException;
+
 public class JWT {
     private String algorithm;
     private String type;
     private String contentType;
     private JWTClaimsSet jwtClaimsSet;
 
-    public static JWT parse(JsonObject header, JsonObject claims) {
+    public static JWT parse(JsonObject header, JsonObject claims) throws ParseException {
         JWT jwt = new JWT();
         jwt.setType(JsonUtils.getJsonStringProp(header, "typ"));
         jwt.setAlgorithm(JsonUtils.getJsonStringProp(header, "alg"));
         jwt.setContentType(JsonUtils.getJsonStringProp(header, "cty"));
+
+        // we only support JWTs where the algorithm is set to "none"
+        if(!jwt.getAlgorithm().equals("none")) {
+            throw new ParseException("This JWT parser only supports plain text JWTs. Found algorithm: " +
+                jwt.getAlgorithm(), 0);
+        }
+
         jwt.setJwtClaimsSet(JWTClaimsSet.parse(claims));
 
         return jwt;
