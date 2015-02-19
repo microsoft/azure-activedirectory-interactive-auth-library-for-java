@@ -16,12 +16,10 @@
 
 package com.microsoftopentechnologies.aad.adal4j.jwt;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.microsoftopentechnologies.aad.adal4j.utils.JsonUtils;
 
 import javax.xml.bind.DatatypeConverter;
 import java.text.ParseException;

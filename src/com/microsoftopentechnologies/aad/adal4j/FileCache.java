@@ -20,11 +20,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.io.ByteStreams;
-import com.microsoftopentechnologies.aad.adal4j.FileSource;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;

@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSerializer;
 import com.microsoftopentechnologies.aad.adal4j.AuthenticationContext;
 import com.microsoftopentechnologies.aad.adal4j.AuthenticationResult;
 import com.microsoftopentechnologies.aad.adal4j.PromptValue;
