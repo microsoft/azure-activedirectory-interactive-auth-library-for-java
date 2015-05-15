@@ -1,19 +1,18 @@
 /**
  * Copyright 2014 Microsoft Open Technologies Inc.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package com.microsoftopentechnologies.aad.adal4j;
 
 import com.google.common.base.Charsets;
@@ -163,9 +162,9 @@ public class AuthenticationContext {
                             JsonUtils.getJsonStringProp(root, OAuthReservedClaim.AccessToken),
                             JsonUtils.getJsonStringProp(root, OAuthReservedClaim.RefreshToken),
                             JsonUtils.getJsonLongProp(root, OAuthReservedClaim.ExpiresOn),
+                            JsonUtils.getJsonStringProp(root, OAuthReservedClaim.Resource),
                             UserInfo.parse(JsonUtils.getJsonStringProp(root, OAuthReservedClaim.IdToken)));
                     future.set(result);
-
                 } catch (Exception e) {
                     future.setException(e);
                 } finally {
@@ -226,8 +225,9 @@ public class AuthenticationContext {
         int statusCode = connection.getResponseCode();
         if (statusCode != HttpURLConnection.HTTP_OK) {
             // TODO: Is IOException the right exception type to raise?
+            String err = CharStreams.toString(new InputStreamReader(connection.getErrorStream()));
             throw new IOException("AD Auth token endpoint returned HTTP status code " +
-                    Integer.toString(statusCode));
+                    Integer.toString(statusCode) + ". Error info: " + err);
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -249,6 +249,7 @@ public class AuthenticationContext {
                 JsonUtils.getJsonStringProp(root, OAuthReservedClaim.AccessToken),
                 JsonUtils.getJsonStringProp(root, OAuthReservedClaim.RefreshToken),
                 JsonUtils.getJsonLongProp(root, OAuthReservedClaim.ExpiresOn),
+                JsonUtils.getJsonStringProp(root, OAuthReservedClaim.Resource),
                 authenticationResult.getUserInfo()
         );
     }
@@ -266,6 +267,8 @@ public class AuthenticationContext {
         try {
             String correlationId = UUID.randomUUID().toString();
 
+            boolean noShell = PromptValue.attemptNone.equals(promptValue);
+
             // build the a/d auth URI params
             Map<String, String> params = new HashMap<String, String>();
             params.put(OAuthParameter.resource, resource);
@@ -276,8 +279,7 @@ public class AuthenticationContext {
             params.put(OAuthParameter.prompt, promptValue);
             params.put("site_id", "500879");
             params.put("display", "popup");
-            String query = null;
-            query = EncodingHelper.toQueryString(params);
+            String query = EncodingHelper.toQueryString(params);
 
             // build the actual URI
             String adUri = AUTHORIZE_ENDPOINT_TEMPLATE.replace("{host}", authority).replace("{tenant}", tenantName);
@@ -334,7 +336,8 @@ public class AuthenticationContext {
                 BrowserLauncher browserLauncher = new BrowserLauncher(
                         adUri, redirectUri,
                         webServer.getBaseURL().toString(),
-                        windowTitle);
+                        windowTitle,
+                        noShell);
                 browserLauncher.browseAsync();
             } catch (MalformedURLException ignored) {
             }
