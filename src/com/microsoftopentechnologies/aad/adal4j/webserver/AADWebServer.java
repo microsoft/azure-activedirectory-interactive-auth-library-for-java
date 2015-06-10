@@ -88,7 +88,7 @@ public class AADWebServer extends WebServer {
             httpExchange.sendResponseHeaders(200, 0);
 
             // send browser response
-            InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("auth-response.html");
+            InputStream input = getClass().getClassLoader().getResourceAsStream("auth-response.html");
             OutputStream output = httpExchange.getResponseBody();
             ByteStreams.copy(input, output);
             output.close();

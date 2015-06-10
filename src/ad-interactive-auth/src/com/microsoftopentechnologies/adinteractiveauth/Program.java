@@ -1,19 +1,18 @@
 /**
  * Copyright 2014 Microsoft Open Technologies Inc.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package com.microsoftopentechnologies.adinteractiveauth;
 
 import org.eclipse.swt.SWT;
@@ -33,12 +32,13 @@ import java.net.*;
 public class Program {
     public static void main(String[] args) {
         // we expect the following arguments to be passed in:
-        //  [1] a/d login URL
-        //  [2] redirect URI
-        //  [3] callback url to which the auth code needs to be sent
-        //  [4] window title text
-        //  [5] optional boolean indicating whether we should invoke System.exit once done
-        if(args.length < 4) {
+        //  [0] a/d login URL
+        //  [1] redirect URI
+        //  [2] callback url to which the auth code needs to be sent
+        //  [3] window title text
+        //  [4] optional boolean indicating whether we should invoke System.exit once done
+        //  [5] optional boolean indicating whether we should not show the shell window
+        if (args.length < 4) {
             return;
         }
 
@@ -47,11 +47,12 @@ public class Program {
         final String callbackUrl = args[2];
         String windowTitle = args[3];
         boolean shouldExit = (args.length > 4) && Boolean.parseBoolean(args[4]);
+        boolean noShell = (args.length > 5) && Boolean.parseBoolean(args[5]);
 
         Display display = new Display();
         Shell shell = new Shell(display);
         shell.setText(windowTitle);
-        Browser browser = null;
+        Browser browser;
         ADAuthCodeCallback authCodeCallback = new ADAuthCodeCallback(display, callbackUrl);
 
         shell.setLayout(new FillLayout());
@@ -66,16 +67,25 @@ public class Program {
         } catch (SWTError err) {
             authCodeCallback.onFailed(
                     "Unable to load the browser component on this system. Here's some additional information: \n" +
-                    err.getMessage());
+                            err.getMessage());
             return;
         }
 
         BrowserLocationListener locationListener = new BrowserLocationListener(
                 redirectUri, authCodeCallback);
         browser.addLocationListener(locationListener);
+
+        if (noShell) {
+            BrowserSilentProgressListener progressListener = new BrowserSilentProgressListener(authCodeCallback);
+            browser.addProgressListener(progressListener);
+        }
+
         browser.setUrl(url);
 
-        shell.open();
+        if (!noShell) {
+            shell.open();
+        }
+
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
                 display.sleep();
@@ -87,11 +97,11 @@ public class Program {
         // notify the caller that the window was closed
         try {
             httpRequest(new URI(callbackUrl).resolve("closed").toURL());
+        } catch (IOException ignored) {
+        } catch (URISyntaxException ignored) {
         }
-        catch (IOException ignored) {}
-        catch (URISyntaxException ignored) {}
 
-        if(shouldExit) {
+        if (shouldExit) {
             System.exit(0);
         }
     }
@@ -104,7 +114,7 @@ public class Program {
     }
 
     private static void httpRequest(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.getResponseCode();
     }
 
