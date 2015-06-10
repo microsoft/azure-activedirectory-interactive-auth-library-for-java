@@ -225,7 +225,23 @@ public class AuthenticationContext {
         int statusCode = connection.getResponseCode();
         if (statusCode != HttpURLConnection.HTTP_OK) {
             // TODO: Is IOException the right exception type to raise?
-            String err = CharStreams.toString(new InputStreamReader(connection.getErrorStream()));
+            InputStream errorStream = null;
+            InputStreamReader errorReader = null;
+            String err = "";
+            try {
+                errorStream = connection.getErrorStream();
+                errorReader = new InputStreamReader(errorStream);
+                err = CharStreams.toString(errorReader);
+            }
+            finally {
+                if(errorStream != null) {
+                    errorStream.close();
+                }
+                if(errorReader != null) {
+                    errorReader.close();
+                }
+            }
+
             throw new IOException("AD Auth token endpoint returned HTTP status code " +
                     Integer.toString(statusCode) + ". Error info: " + err);
         }
