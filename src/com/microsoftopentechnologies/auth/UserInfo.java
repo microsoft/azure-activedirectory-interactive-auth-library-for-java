@@ -38,6 +38,7 @@ public class UserInfo implements Serializable {
     private final String upn;
     private final String uniqueName;
     private final String tenantId;
+    private final JWTClaimsSet claims;
 
     private UserInfo(final String userId,
                      final String givenName,
@@ -45,7 +46,8 @@ public class UserInfo implements Serializable {
                      final String identityProvider,
                      final String upn,
                      final String uniqueName,
-                     final String tenantId) {
+                     final String tenantId,
+                     final JWTClaimsSet claims) {
         this.userId = userId;
         this.givenName = givenName;
         this.familyName = familyName;
@@ -53,6 +55,7 @@ public class UserInfo implements Serializable {
         this.upn = upn;
         this.uniqueName = uniqueName;
         this.tenantId = tenantId;
+        this.claims = claims;
     }
 
     public static UserInfo parse(String idtoken) throws ParseException {
@@ -71,7 +74,8 @@ public class UserInfo implements Serializable {
                 JsonUtils.getAsString(customClaims.get(IdTokenClaim.IdentityProvider)),
                 JsonUtils.getAsString(customClaims.get(IdTokenClaim.UPN)),
                 JsonUtils.getAsString(customClaims.get(IdTokenClaim.UniqueName)),
-                JsonUtils.getAsString(customClaims.get(IdTokenClaim.TenantId)));
+                JsonUtils.getAsString(customClaims.get(IdTokenClaim.TenantId)),
+                claims);
     }
 
     /**
@@ -135,5 +139,21 @@ public class UserInfo implements Serializable {
      */
     public String getTenantId() {
         return tenantId;
+    }
+
+    /**
+     * Get the collection of custom claims.
+     * @return Custom claims map.
+     */
+    public Map<String, JsonElement> getCustomClaims() {
+        return claims.getCustomClaims();
+    }
+
+    /**
+     * Get the standard JWT claims.
+     * @return JWT claims.
+     */
+    public JWTClaimsSet getClaims() {
+        return claims;
     }
 }

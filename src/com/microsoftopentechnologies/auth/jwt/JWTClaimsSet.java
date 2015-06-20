@@ -34,6 +34,7 @@ public class JWTClaimsSet {
     private Date notBeforeTime;
     private Date issueTime;
     private String jwtID;
+    private String version;
     private Map<String, JsonElement> customClaims = new HashMap<String, JsonElement>();
 
     private static ImmutableList<String> standardClaims = ImmutableList.of(
@@ -50,6 +51,7 @@ public class JWTClaimsSet {
         claimsSet.setNotBeforeTime(new Date(JsonUtils.getJsonLongProp(claims, "nbf") * 1000));
         claimsSet.setIssueTime(new Date(JsonUtils.getJsonLongProp(claims, "iat") * 1000));
         claimsSet.setJwtID(JsonUtils.getJsonStringProp(claims, "jti"));
+        claimsSet.setVersion(JsonUtils.getJsonStringProp(claims, "ver"));
 
         // initialize custom claims
         Map<String, JsonElement> customClaims = claimsSet.getCustomClaims();
@@ -120,5 +122,13 @@ public class JWTClaimsSet {
 
     public Map<String, JsonElement> getCustomClaims() {
         return customClaims;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

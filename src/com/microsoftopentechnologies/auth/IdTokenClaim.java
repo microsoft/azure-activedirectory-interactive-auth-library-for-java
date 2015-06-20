@@ -30,4 +30,6 @@ public class IdTokenClaim
     public static final String PasswordExpiration = "pwd_exp";
     public static final String PasswordChangeUrl = "pwd_url";
     public static final String UniqueName = "unique_name";
+    public static final String Audience = "aud";
+    public static final String ExpirationTime = "exp";
 }
