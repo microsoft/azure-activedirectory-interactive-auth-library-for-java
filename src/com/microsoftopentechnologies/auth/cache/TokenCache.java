@@ -174,7 +174,7 @@ public class TokenCache {
         eventBus.post(new AfterAccessEvent(this, tokenCacheEvent));
     }
 
-    public void clear() {
+    public void clear() throws IOException {
         TokenCacheEvent tokenCacheEvent = new TokenCacheEvent(this);
         tokenCacheEvent.setTokenCache(this);
         eventBus.post(new BeforeAccessEvent(this, tokenCacheEvent));
@@ -184,15 +184,19 @@ public class TokenCache {
         eventBus.post(new AfterAccessEvent(this, tokenCacheEvent));
     }
 
-    public boolean isHasStateChanged() {
+    public boolean hasStateChanged() {
         return hasStateChanged;
     }
 
-    public void setHasStateChanged(boolean hasStateChanged) {
+    public void setStateChanged(boolean hasStateChanged) {
         this.hasStateChanged = hasStateChanged;
     }
 
     public int getCount() {
         return tokenCacheMap.size();
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }
