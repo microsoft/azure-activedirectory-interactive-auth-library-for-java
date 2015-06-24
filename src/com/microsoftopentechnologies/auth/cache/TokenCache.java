@@ -23,6 +23,10 @@ public class TokenCache {
     private final int SCHEMA_VERSION = 2;
     private final String DELIMITER = ":::";
 
+    /**
+     * Static token cache shared by all instances of AuthenticationContext which do not
+     * explicitly pass a cache instance during construction.
+     */
     private static TokenCache instance;
 
     static {
@@ -147,6 +151,10 @@ public class TokenCache {
                 tokenCacheKey.getUniqueId(), tokenCacheKey.getDisplayableId()));
         tokenCacheMap.put(tokenCacheKey, result);
         hasStateChanged = true;
+    }
+
+    public TokenCacheItem get(TokenCacheKey tokenCacheKey) {
+        return new TokenCacheItem(tokenCacheKey, tokenCacheMap.get(tokenCacheKey));
     }
 
     public void deleteItem(TokenCacheItem tokenCacheItem) {

@@ -20,11 +20,21 @@ public class TokenCacheKey {
      *                 {@code id_token}.
      */
     public TokenCacheKey(String authority, String resource, UserInfo userInfo) {
-        this.authority = Strings.nullToEmpty(authority);
-        this.resource = Strings.nullToEmpty(resource);
-        this.clientId = Strings.nullToEmpty(userInfo.getClaims().getAudience());
-        this.displayableId = Strings.nullToEmpty(userInfo.getUniqueName());
-        this.uniqueId = Strings.nullToEmpty(userInfo.getClaims().getSubject());
+        this(
+                Strings.nullToEmpty(authority),
+                Strings.nullToEmpty(userInfo.getClaims().getAudience()),
+                Strings.nullToEmpty(userInfo.getUniqueName()),
+                Strings.nullToEmpty(resource),
+                Strings.nullToEmpty(userInfo.getClaims().getSubject())
+        );
+    }
+
+    public TokenCacheKey(String authority, String clientId, String displayableId, String resource, String uniqueId) {
+        this.authority = authority;
+        this.clientId = clientId;
+        this.displayableId = displayableId;
+        this.resource = resource;
+        this.uniqueId = uniqueId;
     }
 
     public String getAuthority() {

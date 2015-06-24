@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="azure-activedirectory-interactive-auth-library-for-java:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/azure_activedirectory_interactive_auth_library_for_java_jar</output-path>
+    <root id="archive" name="azure-activedirectory-interactive-auth-library-for-java.jar">
+      <element id="module-output" name="azure-activedirectory-interactive-auth-library-for-java" />
+    </root>
+  </artifact>
+</component>
