@@ -146,10 +146,17 @@ public class TokenCache {
 
     public void add(AuthenticationResult result, String authority, String resource) {
         TokenCacheKey tokenCacheKey = new TokenCacheKey(authority, resource, result.getUserInfo());
+
         eventBus.post(new BeforeWriteEvent(
                 this, this, tokenCacheKey.getClientId(), resource,
                 tokenCacheKey.getUniqueId(), tokenCacheKey.getDisplayableId()));
+
         tokenCacheMap.put(tokenCacheKey, result);
+
+        eventBus.post(new AfterWriteEvent(
+                this, this, tokenCacheKey.getClientId(), resource,
+                tokenCacheKey.getUniqueId(), tokenCacheKey.getDisplayableId()));
+
         hasStateChanged = true;
     }
 
