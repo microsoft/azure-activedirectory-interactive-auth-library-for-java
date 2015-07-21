@@ -24,6 +24,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.microsoftopentechnologies.auth.browser.BrowserLauncher;
+import com.microsoftopentechnologies.auth.browser.BrowserLauncherDefault;
 import com.microsoftopentechnologies.auth.utils.EncodingHelper;
 import com.microsoftopentechnologies.auth.utils.JsonUtils;
 import com.microsoftopentechnologies.auth.webserver.AADWebServer;
@@ -49,6 +51,8 @@ public class AuthenticationContext {
     private ReentrantLock authCodeLock = new ReentrantLock();
     private boolean gotAuthCode = false;
 
+    private BrowserLauncher browserLauncher = new BrowserLauncherDefault();
+
     public AuthenticationContext(final String authority) throws IOException {
         this.authority = authority;
     }
@@ -58,6 +62,10 @@ public class AuthenticationContext {
             webServer.stop();
             webServer = null;
         }
+    }
+
+    public void setBrowserLauncher(BrowserLauncher browserLauncher) {
+        this.browserLauncher = browserLauncher;
     }
 
     public ListenableFuture<AuthenticationResult> acquireTokenInteractiveAsync(
@@ -349,12 +357,23 @@ public class AuthenticationContext {
 
             // start the browser
             try {
-                BrowserLauncher browserLauncher = new BrowserLauncher(
-                        adUri, redirectUri,
+                ListenableFuture<Void> launchFuture = browserLauncher.browseAsync(adUri, redirectUri,
                         webServer.getBaseURL().toString(),
                         windowTitle,
                         noShell);
-                browserLauncher.browseAsync();
+
+                Futures.addCallback(launchFuture, new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        // do nothing in case browser launch is successful
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        future.setException(t);
+                    }
+                });
+
             } catch (MalformedURLException ignored) {
             }
         } catch (UnsupportedEncodingException e) {

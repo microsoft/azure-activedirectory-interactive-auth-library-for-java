@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.microsoftopentechnologies.auth;
+package com.microsoftopentechnologies.auth.browser;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import com.microsoftopentechnologies.auth.ADJarLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,40 +35,36 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-public class BrowserLauncher {
-    private String url;
-    private String redirectUrl;
-    private String callbackUrl;
-    private String windowTitle;
-    private boolean noShell;
-
+public class BrowserLauncherDefault implements BrowserLauncher {
     private static URLClassLoader loader = null;
     private ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
 
-    public BrowserLauncher(
-            String url,
-            String redirectUrl,
-            String callbackUrl,
-            String windowTitle,
-            boolean noShell) {
-        this.url = url;
-        this.redirectUrl = redirectUrl;
-        this.callbackUrl = callbackUrl;
-        this.windowTitle = windowTitle;
-        this.noShell = noShell;
-    }
-
-    public ListenableFuture<Void> browseAsync() {
+    @Override
+    public ListenableFuture<Void> browseAsync(String url,
+                                              String redirectUrl,
+                                              String callbackUrl,
+                                              String windowTitle,
+                                              boolean noShell) {
         SettableFuture<Void> future = SettableFuture.create();
-        executorService.submit(new LauncherTask(future));
+        executorService.submit(new LauncherTask(future, url, redirectUrl, callbackUrl, windowTitle, noShell));
         return future;
     }
 
     private class LauncherTask implements Callable<Void> {
         SettableFuture<Void> future;
+        private final String url;
+        private final String redirectUrl;
+        private final String callbackUrl;
+        private final String windowTitle;
+        private final boolean noShell;
 
-        public LauncherTask(SettableFuture<Void> future) {
+        public LauncherTask(SettableFuture<Void> future, String url, String redirectUrl, String callbackUrl, String windowTitle, boolean noShell) {
             this.future = future;
+            this.url = url;
+            this.redirectUrl = redirectUrl;
+            this.callbackUrl = callbackUrl;
+            this.windowTitle = windowTitle;
+            this.noShell = noShell;
         }
 
         @Override
@@ -160,7 +157,7 @@ public class BrowserLauncher {
             if (loader == null) {
                 loader = new URLClassLoader(new URL[]{
                         new URL("file:///" + appJar.getPath())
-                }, BrowserLauncher.class.getClassLoader());
+                }, BrowserLauncherDefault.class.getClassLoader());
             }
 
             Class<?> program = loader.loadClass("com.microsoftopentechnologies.adinteractiveauth.Program");
