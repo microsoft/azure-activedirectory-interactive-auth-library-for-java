@@ -119,54 +119,10 @@ public class BrowserLauncherDefault implements BrowserLauncher {
             // cause it to reuse session cookies which saves the user from having to enter
             // credentials over and over again.
             if (isMac || isLinux) {
-                launchExternalProcess(appJar, isMac);
+                BrowserLauncherHelper.launchExternalProcess(appJar, url, redirectUrl, callbackUrl, windowTitle, noShell);
             } else {
-                launchInvoke(appJar);
+                BrowserLauncherHelper.launchInProcess(appJar, url, redirectUrl, callbackUrl, windowTitle, noShell);
             }
-        }
-
-        private void launchExternalProcess(File appJar, boolean isMac) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InterruptedException {
-            List<String> args = new ArrayList<String>();
-
-            // fetch path to the currently running JVM
-            File javaHome = new File(System.getProperty("java.home"));
-            File javaExecutable = new File(javaHome, "bin" + File.separator + "java");
-            args.add(javaExecutable.getAbsolutePath());
-
-            if (isMac) {
-                // swt on mac requires this argument in order for the swt dispatch
-                // loop to be running on the UI thread
-                args.add("-XstartOnFirstThread");
-            }
-            args.add("-cp");
-            args.add(appJar.getAbsolutePath());
-            args.add("com.microsoftopentechnologies.adinteractiveauth.Program");
-            args.add(url);
-            args.add(redirectUrl);
-            args.add(callbackUrl);
-            args.add(windowTitle);
-            // process should exit after sign in is complete
-            args.add("true");
-            args.add(String.valueOf(noShell));
-
-            ProcessBuilder pb = new ProcessBuilder(args);
-            pb.start();
-        }
-
-        private void launchInvoke(File appJar) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-            if (loader == null) {
-                loader = new URLClassLoader(new URL[]{
-                        new URL("file:///" + appJar.getPath())
-                }, BrowserLauncherDefault.class.getClassLoader());
-            }
-
-            Class<?> program = loader.loadClass("com.microsoftopentechnologies.adinteractiveauth.Program");
-            final Method main = program.getDeclaredMethod("main", String[].class);
-            final String[] args = new String[]{
-                    url, redirectUrl, callbackUrl, windowTitle, "false", String.valueOf(noShell)
-            };
-
-            main.invoke(null, (Object) args);
         }
 
         private void reportError(Throwable err) {
