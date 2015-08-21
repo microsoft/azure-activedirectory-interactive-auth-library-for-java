@@ -51,8 +51,6 @@ public class AADAuthSample extends JFrame {
         authority.setText("login.windows.net");
         tenantName.setText("common");
         resource.setText("https://management.core.windows.net/");
-        clientID.setText("61d65f5a-6e3b-468b-af73-a033f5098c5c");
-        redirectURI.setText("https://msopentech.com/");
 
         signIn.addActionListener(new ActionListener() {
             @Override
