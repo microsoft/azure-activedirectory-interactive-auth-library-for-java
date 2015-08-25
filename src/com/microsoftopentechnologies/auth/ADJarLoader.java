@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 public class ADJarLoader {
-    private static final String BASE_URL = "http://msopentechrelease.blob.core.windows.net/msopentechtools/";
+    private static final String BASE_URL = "https://msopentechrelease.blob.core.windows.net/msopentechtools/";
     private static FileCache filesCache;
     private static String jarName;
 
