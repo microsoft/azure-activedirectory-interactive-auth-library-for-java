@@ -39,7 +39,7 @@ public class UserInfo implements Serializable {
     private final String uniqueName;
     private final String tenantId;
 
-    private UserInfo(final String userId,
+    public UserInfo(final String userId,
                      final String givenName,
                      final String familyName,
                      final String identityProvider,
