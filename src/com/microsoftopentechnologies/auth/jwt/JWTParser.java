@@ -20,6 +20,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.commons.codec.binary.Base64;
 
 import javax.xml.bind.DatatypeConverter;
 import java.text.ParseException;
@@ -51,7 +52,7 @@ public class JWTParser {
         // parse JWT header and claims
         JsonParser jsonParser = new JsonParser();
         JsonObject header = (JsonObject)jsonParser.parse(stringFromBase64(tokens.get(0)));
-        JsonObject claims = (JsonObject)jsonParser.parse(stringFromBase64(tokens.get(1)));
+        JsonObject claims = (JsonObject)jsonParser.parse(new String(Base64.decodeBase64(tokens.get(1))));
 
         return JWT.parse(header, claims);
     }
