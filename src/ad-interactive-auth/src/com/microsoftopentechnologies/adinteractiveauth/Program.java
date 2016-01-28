@@ -63,7 +63,7 @@ public class Program {
         shell.setLocation((bounds.width - size.width) / 2, (bounds.height - size.height) / 2);
 
         try {
-            browser = new org.eclipse.swt.browser.Browser(shell, SWT.NONE);
+            browser = new org.eclipse.swt.browser.Browser(shell, SWT.ON_TOP);
         } catch (SWTError err) {
             authCodeCallback.onFailed(
                     "Unable to load the browser component on this system. Here's some additional information: \n" +
